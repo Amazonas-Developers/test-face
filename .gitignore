@@ -10,4 +10,4 @@ build/, dist/
 .coverage, htmlcov/
 venv/
 
-.env/
+.env

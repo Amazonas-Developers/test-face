@@ -1,14 +1,23 @@
+import os
 import cv2
+from dotenv import load_dotenv
+from face_encoder import FaceEncoder
 
-url_dvr_local = 'rtsp://test:Test123456.@72.68.60.117:554/Streaming/channels/101/'
 
-url_nvr_orlando = 'rtsp://admin:sistel2020@108.191.80.47:554/Streaming/channels/401/'
+load_dotenv()
+
+api_key = os.getenv('url_amazona')
+url_dvr_local = f'{api_key}/Streaming/channels/101/'
+
+
 
 
 cap = cv2.VideoCapture(url_dvr_local)
 
 
-# Verifica que el stream se haya abierto correctamente.
+
+
+
 if not cap.isOpened():
     print(f"Error: No se pudo conectar al stream del DVR en la URL: {url_nvr_orlando}")
     print("Verifica si la dirección IP, el puerto, el usuario y la contraseña son correctos.")
@@ -17,7 +26,7 @@ if not cap.isOpened():
 
 
 
-# Bucle principal para leer y mostrar los fotogramas del video.
+# Bucle principal para leer y mostrar los fotogramas del stream.
 while True:
     # Lee un fotograma.
     ret, frame = cap.read()

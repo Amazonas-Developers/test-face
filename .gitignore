@@ -9,3 +9,5 @@ build/, dist/
 *.sqlite3
 .coverage, htmlcov/
 venv/
+
+.env/

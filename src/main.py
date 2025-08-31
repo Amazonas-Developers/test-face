@@ -6,6 +6,7 @@ import numpy as np
 import threading
 import multiprocessing as mp
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+import dlib
 
 # Cargar variables de entorno
 load_dotenv()
@@ -15,10 +16,16 @@ __dirname = os.path.dirname(__file__)
 NUM_CORES = mp.cpu_count()  # Obtener número de núcleos disponibles
 MAX_WORKERS = NUM_CORES * 2  # Regla general: 2 hilos por núcleo
 
+
+print(dlib.DLIB_USE_CUDA)  # Debe mostrar True
+print(dlib.cuda.get_num_devices())  # Debe mostrar ≥1
+
+
 # Cargar imagen de referencia
 path_image = os.path.join(__dirname, '1.jpg')
 reference_image = face_recognition.load_image_file(path_image)
 referencia_face_encodings = face_recognition.face_encodings(reference_image)
+
 
 if len(referencia_face_encodings) == 0:
     print("Error: No se encontraron rostros en la imagen de referencia.")
@@ -26,9 +33,12 @@ if len(referencia_face_encodings) == 0:
 
 referencia_encoding = referencia_face_encodings[0]
 
+
 # Configuración de la fuente de video
 api_key = os.getenv('url_amazona')
 url_dvr_local = f'{api_key}/Streaming/channels/201/'
+
+
 
 # Inicializar captura de video
 cap = cv2.VideoCapture(url_dvr_local)
@@ -36,9 +46,13 @@ if not cap.isOpened():
     print(f"Error: No se pudo conectar al stream del DVR en la URL: {url_dvr_local}")
     exit()
 
+
+
 # Configurar OpenCV para mejor rendimiento
 cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)  # Reducir buffer para menor latencia
 cap.set(cv2.CAP_PROP_FPS, 30)  # Establecer FPS deseado
+
+
 
 # Función para procesamiento de rostros en paralelo
 def process_face(face_data):
@@ -55,12 +69,14 @@ def process_face(face_data):
     
     return (top, right, bottom, left, name)
 
+
 # Configurar el executor para procesamiento paralelo
 executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 # Bucle principal optimizado
 frame_count = 0
 skip_frames = 2  # Procesar cada 3 frames para mayor rendimiento
+
 
 try:
     while True:
